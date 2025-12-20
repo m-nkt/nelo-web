@@ -1,20 +1,27 @@
 import express from 'express';
 import { google } from 'googleapis';
 import { getUser, updateUserCalendar } from '../db/users.js';
+import { isServiceConfigured } from '../utils/env-check.js';
 
 const router = express.Router();
 
-// OAuth2 client
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
+// OAuth2 client (only if configured)
+const oauth2Client = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+  ? new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    )
+  : null;
 
 /**
  * Initiate Google Calendar OAuth flow
  */
 router.get('/connect', async (req, res) => {
+  if (!oauth2Client) {
+    return res.status(503).send('Google Calendar API is not configured');
+  }
+  
   try {
     const { phone } = req.query;
     
@@ -52,6 +59,10 @@ router.get('/connect', async (req, res) => {
  * OAuth callback
  */
 router.get('/callback', async (req, res) => {
+  if (!oauth2Client) {
+    return res.status(503).send('Google Calendar API is not configured');
+  }
+  
   try {
     const { code, state } = req.query;
     const phoneNumber = state;

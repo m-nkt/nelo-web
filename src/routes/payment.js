@@ -2,14 +2,23 @@ import express from 'express';
 import Stripe from 'stripe';
 import { getUser, updateUserPoints } from '../db/users.js';
 import { sendWhatsAppMessage } from '../utils/twilio.js';
+import { isServiceConfigured } from '../utils/env-check.js';
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Initialize Stripe only if configured
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 /**
  * Create Stripe checkout session
  */
 router.post('/create-checkout', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ error: 'Stripe is not configured' });
+  }
+  
   try {
     const { phoneNumber, points, amount } = req.body;
     
@@ -89,6 +98,10 @@ router.get('/success', async (req, res) => {
  * Stripe webhook
  */
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ error: 'Stripe is not configured' });
+  }
+  
   const sig = req.headers['stripe-signature'];
   
   let event;

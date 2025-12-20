@@ -1,11 +1,5 @@
-import twilio from 'twilio';
 import { processUserMessage } from './chatbot.js';
 import { sendWhatsAppMessage } from '../utils/twilio.js';
-
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
 
 /**
  * Handle incoming WhatsApp message

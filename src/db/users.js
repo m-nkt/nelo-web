@@ -1,14 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// Create Supabase client only if URL is provided
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+
+const supabase = supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 /**
  * Get user state
  */
 export async function getUserState(phoneNumber) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('user_states')
@@ -31,6 +35,7 @@ export async function getUserState(phoneNumber) {
  * Update user state
  */
 export async function updateUserState(phoneNumber, state) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('user_states')
@@ -54,6 +59,7 @@ export async function updateUserState(phoneNumber, state) {
  * Save user data (after registration)
  */
 export async function saveUserData(phoneNumber, registrationData) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('users')
@@ -86,6 +92,7 @@ export async function saveUserData(phoneNumber, registrationData) {
  * Get user by phone number
  */
 export async function getUser(phoneNumber) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('users')
@@ -108,6 +115,7 @@ export async function getUser(phoneNumber) {
  * Get all users
  */
 export async function getAllUsers() {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('users')
@@ -125,6 +133,7 @@ export async function getAllUsers() {
  * Update user calendar credentials
  */
 export async function updateUserCalendar(phoneNumber, calendarData) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('users')
@@ -151,6 +160,7 @@ export async function updateUserCalendar(phoneNumber, calendarData) {
  * Update user points
  */
 export async function updateUserPoints(phoneNumber, pointsDelta) {
+  checkDatabase();
   try {
     // Get current user
     const user = await getUser(phoneNumber);

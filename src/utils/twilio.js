@@ -1,9 +1,12 @@
 import twilio from 'twilio';
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+// Initialize Twilio client only if credentials are provided
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+
+const client = twilioAccountSid && twilioAuthToken
+  ? twilio(twilioAccountSid, twilioAuthToken)
+  : null;
 
 const FROM_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER;
 
@@ -11,6 +14,11 @@ const FROM_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER;
  * Send WhatsApp message via Twilio
  */
 export async function sendWhatsAppMessage(to, message) {
+  if (!client) {
+    console.warn('⚠️  Twilio is not configured. Message not sent:', message);
+    return null;
+  }
+  
   try {
     const result = await client.messages.create({
       from: FROM_NUMBER,
@@ -30,6 +38,11 @@ export async function sendWhatsAppMessage(to, message) {
  * Send WhatsApp message with media (optional)
  */
 export async function sendWhatsAppMessageWithMedia(to, message, mediaUrl) {
+  if (!client) {
+    console.warn('⚠️  Twilio is not configured. Message with media not sent.');
+    return null;
+  }
+  
   try {
     const result = await client.messages.create({
       from: FROM_NUMBER,

@@ -1,10 +1,15 @@
 import { google } from 'googleapis';
 import { getUser } from '../db/users.js';
+import { isServiceConfigured } from '../utils/env-check.js';
 
 /**
  * Get free time slots for a user
  */
 export async function getFreeTimeSlots(phoneNumber, startDate, endDate) {
+  if (!isServiceConfigured('google')) {
+    throw new Error('Google Calendar API is not configured');
+  }
+  
   try {
     const user = await getUser(phoneNumber);
     if (!user || !user.calendar_access_token) {
@@ -51,6 +56,10 @@ export async function getFreeTimeSlots(phoneNumber, startDate, endDate) {
  * Create Google Calendar event with Meet link
  */
 export async function createCalendarEvent(phoneNumber, startTime, duration, otherUserPhone) {
+  if (!isServiceConfigured('google')) {
+    throw new Error('Google Calendar API is not configured');
+  }
+  
   try {
     const user = await getUser(phoneNumber);
     if (!user || !user.calendar_access_token) {

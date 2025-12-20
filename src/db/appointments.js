@@ -1,14 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// Create Supabase client only if URL is provided
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+
+const supabase = supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 /**
  * Create appointment record
  */
 export async function createAppointmentRecord(appointmentData) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('appointments')
@@ -35,14 +39,22 @@ export async function createAppointmentRecord(appointmentData) {
 
 /**
  * Get appointments for a user
+ * If phoneNumber is null, returns all appointments
  */
 export async function getUserAppointments(phoneNumber) {
+  checkDatabase();
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('appointments')
-      .select('*')
-      .or(`user1_phone.eq.${phoneNumber},user2_phone.eq.${phoneNumber}`)
-      .order('scheduled_at', { ascending: true });
+      .select('*');
+    
+    if (phoneNumber) {
+      query = query.or(`user1_phone.eq.${phoneNumber},user2_phone.eq.${phoneNumber}`);
+    }
+    
+    query = query.order('scheduled_at', { ascending: true });
+    
+    const { data, error } = await query;
     
     if (error) throw error;
     return data || [];
@@ -56,6 +68,7 @@ export async function getUserAppointments(phoneNumber) {
  * Update appointment status
  */
 export async function updateAppointmentStatus(appointmentId, status) {
+  checkDatabase();
   try {
     const { data, error } = await supabase
       .from('appointments')

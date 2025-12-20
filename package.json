@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "test:webhook": "node scripts/test-webhook.js",
+    "test:matching": "node scripts/test-matching.js"
   },
   "keywords": [
     "language-matching",
@@ -21,7 +23,6 @@
     "dotenv": "^16.3.1",
     "twilio": "^4.19.0",
     "openai": "^4.20.1",
-    "@google-cloud/calendar": "^3.0.0",
     "googleapis": "^126.0.1",
     "stripe": "^14.7.0",
     "@supabase/supabase-js": "^2.38.4",
