@@ -1,0 +1,70 @@
+-- Database schema for Language Matching Service
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  phone_number VARCHAR(20) UNIQUE NOT NULL,
+  language_learning VARCHAR(50),
+  language_teaching VARCHAR(50),
+  level VARCHAR(50),
+  preferred_time TEXT,
+  gender VARCHAR(20),
+  age_range VARCHAR(20),
+  video_call_ok BOOLEAN DEFAULT false,
+  points_balance INTEGER DEFAULT 0,
+  trust_score INTEGER DEFAULT 100,
+  calendar_access_token TEXT,
+  calendar_refresh_token TEXT,
+  calendar_id VARCHAR(255),
+  calendar_expires_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- User states table (for registration flow)
+CREATE TABLE IF NOT EXISTS user_states (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  phone_number VARCHAR(20) UNIQUE NOT NULL,
+  state JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Appointments table
+CREATE TABLE IF NOT EXISTS appointments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user1_phone VARCHAR(20) NOT NULL,
+  user2_phone VARCHAR(20) NOT NULL,
+  scheduled_at TIMESTAMP NOT NULL,
+  duration_minutes INTEGER DEFAULT 15,
+  google_meet_link TEXT,
+  points_used INTEGER DEFAULT 100,
+  status VARCHAR(20) DEFAULT 'pending',
+  cancelled_by VARCHAR(20),
+  cancellation_reason TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (user1_phone) REFERENCES users(phone_number),
+  FOREIGN KEY (user2_phone) REFERENCES users(phone_number)
+);
+
+-- Point transactions table
+CREATE TABLE IF NOT EXISTS point_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_phone VARCHAR(20) NOT NULL,
+  amount INTEGER NOT NULL,
+  transaction_type VARCHAR(50) NOT NULL,
+  appointment_id UUID,
+  stripe_payment_intent_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (user_phone) REFERENCES users(phone_number),
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id)
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone_number);
+CREATE INDEX IF NOT EXISTS idx_users_languages ON users(language_learning, language_teaching);
+CREATE INDEX IF NOT EXISTS idx_appointments_users ON appointments(user1_phone, user2_phone);
+CREATE INDEX IF NOT EXISTS idx_appointments_scheduled ON appointments(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_point_transactions_user ON point_transactions(user_phone);
+
