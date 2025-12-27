@@ -1,15 +1,16 @@
+// IMPORTANT: Load environment variables FIRST before any other imports
+import './config/env.js';
+
 import express from 'express';
-import dotenv from 'dotenv';
 import whatsappRoutes from './routes/whatsapp.js';
 import calendarRoutes from './routes/calendar.js';
 import paymentRoutes from './routes/payment.js';
 import matchingRoutes from './routes/matching.js';
 import adminRoutes from './routes/admin.js';
+import testRoutes from './routes/test.js';
 import { initializeScheduler } from './jobs/scheduler.js';
 import { checkEnvironmentVariables, isServiceConfigured } from './utils/env-check.js';
 import { isPortInUse, findAvailablePort } from './utils/port-check.js';
-
-dotenv.config();
 
 const app = express();
 let PORT = parseInt(process.env.PORT) || 3000;
@@ -29,6 +30,7 @@ app.use('/api/calendar', calendarRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', testRoutes); // Test routes (no auth required)
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -68,7 +70,7 @@ async function startServer() {
     console.log('📊 Service Status:');
     console.log(`   Database: ${isServiceConfigured('database') ? '✅ Configured' : '⚠️  Not configured'}`);
     console.log(`   Twilio: ${isServiceConfigured('twilio') ? '✅ Configured' : '⚠️  Not configured'}`);
-    console.log(`   OpenAI: ${isServiceConfigured('openai') ? '✅ Configured' : '⚠️  Not configured'}`);
+    console.log(`   Gemini: ${isServiceConfigured('gemini') ? '✅ Configured' : '⚠️  Not configured'}`);
     console.log(`   Google: ${isServiceConfigured('google') ? '✅ Configured' : '⚠️  Not configured'}`);
     console.log(`   Stripe: ${isServiceConfigured('stripe') ? '✅ Configured' : '⚠️  Not configured'}`);
     console.log('');

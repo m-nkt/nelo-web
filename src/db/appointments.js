@@ -1,12 +1,52 @@
 import { createClient } from '@supabase/supabase-js';
+import '../config/env.js'; // Ensure environment variables are loaded
+import { normalizePhoneNumber } from '../utils/phone-number.js';
 
-// Create Supabase client only if URL is provided
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+// Lazy initialization: Get Supabase client dynamically
+function getSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    return null;
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
-const supabase = supabaseUrl && supabaseKey
-  ? createClient(supabaseUrl, supabaseKey)
-  : null;
+// Cache the client instance
+let supabase = null;
+
+/**
+ * Get or create Supabase client
+ */
+function getSupabase() {
+  // Always check environment variables fresh (in case they were loaded later)
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  
+  // If we have a cached client but env vars are missing, clear cache
+  if (supabase && (!supabaseUrl || !supabaseKey)) {
+    supabase = null;
+  }
+  
+  // If we don't have a client or env vars changed, create new one
+  if (!supabase && supabaseUrl && supabaseKey) {
+    supabase = getSupabaseClient();
+  }
+  
+  return supabase;
+}
+
+/**
+ * Check if database is configured
+ */
+function checkDatabase() {
+  const client = getSupabase();
+  if (!client) {
+    throw new Error('Database is not configured');
+  }
+}
 
 /**
  * Create appointment record
@@ -14,11 +54,14 @@ const supabase = supabaseUrl && supabaseKey
 export async function createAppointmentRecord(appointmentData) {
   checkDatabase();
   try {
-    const { data, error } = await supabase
+    // Normalize phone numbers to ensure consistency
+    const user1Phone = normalizePhoneNumber(appointmentData.user1_phone);
+    const user2Phone = normalizePhoneNumber(appointmentData.user2_phone);
+    const { data, error } = await getSupabase()
       .from('appointments')
       .insert({
-        user1_phone: appointmentData.user1_phone,
-        user2_phone: appointmentData.user2_phone,
+        user1_phone: user1Phone,
+        user2_phone: user2Phone,
         scheduled_at: appointmentData.scheduled_at,
         duration_minutes: appointmentData.duration_minutes,
         google_meet_link: appointmentData.google_meet_link,
@@ -44,12 +87,14 @@ export async function createAppointmentRecord(appointmentData) {
 export async function getUserAppointments(phoneNumber) {
   checkDatabase();
   try {
-    let query = supabase
+    // Normalize phone number to ensure consistency
+    const normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : null;
+    let query = getSupabase()
       .from('appointments')
       .select('*');
     
-    if (phoneNumber) {
-      query = query.or(`user1_phone.eq.${phoneNumber},user2_phone.eq.${phoneNumber}`);
+    if (normalizedPhone) {
+      query = query.or(`user1_phone.eq.${normalizedPhone},user2_phone.eq.${normalizedPhone}`);
     }
     
     query = query.order('scheduled_at', { ascending: true });
@@ -70,7 +115,7 @@ export async function getUserAppointments(phoneNumber) {
 export async function updateAppointmentStatus(appointmentId, status) {
   checkDatabase();
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('appointments')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', appointmentId)

@@ -10,7 +10,7 @@ const REQUIRED_ENV_VARS = {
     'SUPABASE_KEY',
     'TWILIO_ACCOUNT_SID',
     'TWILIO_AUTH_TOKEN',
-    'OPENAI_API_KEY',
+    'GEMINI_API_KEY',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
     'STRIPE_SECRET_KEY'
@@ -74,8 +74,8 @@ export function isServiceConfigured(serviceName) {
     twilio: {
       required: ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN']
     },
-    openai: {
-      required: ['OPENAI_API_KEY']
+    gemini: {
+      required: ['GEMINI_API_KEY']
     },
     google: {
       required: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET']

@@ -108,7 +108,7 @@ async function proposeMatch(user1Phone, user2Phone, suggestedTime) {
       return;
     }
     
-    const formattedTime = new Date(suggestedTime).toLocaleString('ja-JP', {
+    const formattedTime = new Date(suggestedTime).toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -119,33 +119,33 @@ async function proposeMatch(user1Phone, user2Phone, suggestedTime) {
     // Send proposal to user1
     await sendWhatsAppMessage(
       user1Phone,
-      `🎯 マッチング候補が見つかりました！\n\n` +
-      `相手: ${user2Phone}\n` +
-      `学びたい言語: ${user2.language_learning}\n` +
-      `教えられる言語: ${user2.language_teaching}\n` +
-      `レベル: ${user2.level}\n` +
-      `信頼度スコア: ${user2.trust_score}/100\n\n` +
-      `提案日時: ${formattedTime}\n` +
-      `時間: 15分\n\n` +
-      `このマッチングを確定しますか？\n` +
-      `「はい」または「いいえ」で返信してください。\n\n` +
-      `※ 確定には100ポイント必要です。`
+      `🎯 Matching candidate found!\n\n` +
+      `Partner: ${user2Phone}\n` +
+      `Learning: ${user2.language_learning}\n` +
+      `Teaching: ${user2.language_teaching}\n` +
+      `Level: ${user2.level}\n` +
+      `Trust Score: ${user2.trust_score}/100\n\n` +
+      `Proposed Time: ${formattedTime}\n` +
+      `Duration: 15 minutes\n\n` +
+      `Would you like to confirm this match?\n` +
+      `Please reply with "yes" or "no".\n\n` +
+      `Note: Confirming requires 100 points.`
     );
     
     // Send proposal to user2
     await sendWhatsAppMessage(
       user2Phone,
-      `🎯 マッチング候補が見つかりました！\n\n` +
-      `相手: ${user1Phone}\n` +
-      `学びたい言語: ${user1.language_learning}\n` +
-      `教えられる言語: ${user1.language_teaching}\n` +
-      `レベル: ${user1.level}\n` +
-      `信頼度スコア: ${user1.trust_score}/100\n\n` +
-      `提案日時: ${formattedTime}\n` +
-      `時間: 15分\n\n` +
-      `このマッチングを確定しますか？\n` +
-      `「はい」または「いいえ」で返信してください。\n\n` +
-      `※ 確定には100ポイント必要です。`
+      `🎯 Matching candidate found!\n\n` +
+      `Partner: ${user1Phone}\n` +
+      `Learning: ${user1.language_learning}\n` +
+      `Teaching: ${user1.language_teaching}\n` +
+      `Level: ${user1.level}\n` +
+      `Trust Score: ${user1.trust_score}/100\n\n` +
+      `Proposed Time: ${formattedTime}\n` +
+      `Duration: 15 minutes\n\n` +
+      `Would you like to confirm this match?\n` +
+      `Please reply with "yes" or "no".\n\n` +
+      `Note: Confirming requires 100 points.`
     );
     
     // Save proposal to database (you may want to create a proposals table)
@@ -160,36 +160,36 @@ async function proposeMatch(user1Phone, user2Phone, suggestedTime) {
  */
 export async function handleMatchProposalResponse(phoneNumber, response, otherUserPhone, proposedTime) {
   try {
-    if (response.toLowerCase().includes('はい') || response.toLowerCase().includes('yes')) {
+    if (response.toLowerCase().includes('yes') || response.toLowerCase().includes('ok') || response.toLowerCase().includes('confirm')) {
       // Both users need to accept - for now, we'll create a pending appointment
       // In a full implementation, you'd check if both users accepted
       const user = await getUser(phoneNumber);
       const otherUser = await getUser(otherUserPhone);
       
       if (!user || !otherUser) {
-        return 'エラー: ユーザーが見つかりません。';
+        return 'Error: User not found.';
       }
       
       if (user.points_balance < 100 || otherUser.points_balance < 100) {
-        return 'ポイントが不足しています。ポイントを購入してから再度お試しください。';
+        return 'Insufficient points. Please purchase points and try again.';
       }
       
       // Create appointment (you may want to make this async and wait for both confirmations)
       // For now, we'll just send a confirmation
       await sendWhatsAppMessage(
         phoneNumber,
-        `✅ マッチング提案を受け付けました！\n\n` +
-        `相手の確認を待っています。\n` +
-        `両方が承認すると、アポイントメントが確定します。`
+        `✅ Match proposal accepted!\n\n` +
+        `Waiting for the other party's confirmation.\n` +
+        `The appointment will be confirmed once both parties accept.`
       );
       
-      return 'マッチング提案を受け付けました。相手の確認を待っています。';
+      return 'Match proposal accepted. Waiting for the other party\'s confirmation.';
     } else {
-      return 'マッチング提案をキャンセルしました。';
+      return 'Match proposal cancelled.';
     }
   } catch (error) {
     console.error('Error handling match proposal response:', error);
-    return 'エラーが発生しました。';
+    return 'An error occurred.';
   }
 }
 

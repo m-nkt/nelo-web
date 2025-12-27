@@ -20,6 +20,25 @@
 
 ### 👋 非エンジニアの方へ（まずはこちら！）
 
+- **[OPEN_ENV.md](./OPEN_ENV.md)** - .envファイルをワンタップで開く方法 ⭐⭐⭐
+  - 1コマンドで開ける
+  - 超簡単！
+
+- **[ENV_FILE_LOCATION.md](./ENV_FILE_LOCATION.md)** - .envファイルの場所と開き方 ⭐⭐⭐
+  - .envファイルがどこにあるか
+  - どうやって開くか
+  - 超わかりやすく説明
+
+- **[ONE_BY_ONE.md](./ONE_BY_ONE.md)** - 1つずつ設定する手順 ⭐⭐⭐
+  - 1つずつコピー→貼り付け→保存
+  - どこから何をコピーするか
+  - どこに貼り付けるか
+  - 超わかりやすく説明
+
+- **[ENV_SETUP_EASY.md](./ENV_SETUP_EASY.md)** - .envファイル設定ガイド ⭐⭐
+  - 環境変数の設定方法
+  - 1つずつ設定する手順
+
 - **[QUICK_TEST.md](./QUICK_TEST.md)** - 超簡単！5分で確認する方法 ⭐
   - まずはこれだけ試してください
   - サーバーが起動するか確認
@@ -41,6 +60,15 @@
   - SourceTreeの使い方
   - インストールから日常的な作業まで
   - ボタンをクリックするだけで操作できる
+
+### 📋 現状レポート（コーディングエージェント向け）
+
+- **[CURRENT_STATUS_FOR_AGENTS.md](./CURRENT_STATUS_FOR_AGENTS.md)** - プロジェクト現状レポート ⭐⭐⭐
+  - 実現しようとしていること
+  - うまくいっていること
+  - うまくいっていないこと
+  - 繰り返し発生するエラー
+  - 他のエージェントへの依頼事項
 
 ### 📋 計画書・技術ドキュメント
 
@@ -107,7 +135,7 @@
 ### 技術スタック（超ミニマム版・推奨）
 - **Backend**: Node.js / Python
 - **Database**: PostgreSQL (Supabase/Neon)
-- **Chatbot**: WhatsApp Business API (Twilio) + OpenAI/Gemini
+- **Chatbot**: WhatsApp Business API (Twilio) + Google Gemini 1.5 Flash
 - **Calendar**: Google Calendar API
 - **Payment**: Stripe
 - **Video**: Google Meet

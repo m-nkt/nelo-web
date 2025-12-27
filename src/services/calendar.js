@@ -86,8 +86,8 @@ export async function createCalendarEvent(phoneNumber, startTime, duration, othe
       calendarId: user.calendar_id || 'primary',
       conferenceDataVersion: 1,
       requestBody: {
-        summary: `言語交換: ${otherUserPhone}`,
-        description: '言語マッチングサービスのアポイントメント',
+        summary: `Language Exchange: ${otherUserPhone}`,
+        description: 'Language matching service appointment',
         start: {
           dateTime: new Date(startTime).toISOString(),
           timeZone: 'Asia/Tokyo'

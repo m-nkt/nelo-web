@@ -31,9 +31,10 @@ export async function findMatches(phoneNumber) {
         
         // Level match: at least one should be native or both intermediate+
         const levelMatch = 
-          user.level === 'ネイティブ' || 
-          otherUser.level === 'ネイティブ' ||
-          (user.level === '中級以上' && otherUser.level === '中級以上');
+          user.level === 'Native' || 
+          otherUser.level === 'Native' ||
+          (user.level === 'Intermediate' && otherUser.level === 'Intermediate') ||
+          (user.level === 'Advanced' && otherUser.level === 'Advanced');
         
         return levelMatch;
       })
@@ -96,22 +97,22 @@ export async function createAppointment(user1Phone, user2Phone, scheduledAt, dur
     // Send notifications
     await sendWhatsAppMessage(
       user1Phone,
-      `✅ アポイントメントが確定しました！\n\n` +
-      `相手: ${user2Phone}\n` +
-      `日時: ${new Date(scheduledAt).toLocaleString('ja-JP')}\n` +
-      `時間: ${duration}分\n` +
+      `✅ Appointment confirmed!\n\n` +
+      `Partner: ${user2Phone}\n` +
+      `Date & Time: ${new Date(scheduledAt).toLocaleString('en-US')}\n` +
+      `Duration: ${duration} minutes\n` +
       `Google Meet: ${meetLink}\n\n` +
-      `楽しんでください！`
+      `Enjoy your conversation!`
     );
     
     await sendWhatsAppMessage(
       user2Phone,
-      `✅ アポイントメントが確定しました！\n\n` +
-      `相手: ${user1Phone}\n` +
-      `日時: ${new Date(scheduledAt).toLocaleString('ja-JP')}\n` +
-      `時間: ${duration}分\n` +
+      `✅ Appointment confirmed!\n\n` +
+      `Partner: ${user1Phone}\n` +
+      `Date & Time: ${new Date(scheduledAt).toLocaleString('en-US')}\n` +
+      `Duration: ${duration} minutes\n` +
       `Google Meet: ${meetLink}\n\n` +
-      `楽しんでください！`
+      `Enjoy your conversation!`
     );
     
     return appointment;

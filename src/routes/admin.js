@@ -89,6 +89,25 @@ router.get('/appointments', authenticateAdmin, async (req, res) => {
  */
 router.get('/stats', authenticateAdmin, async (req, res) => {
   try {
+    // Check if database is configured
+    const { isServiceConfigured } = await import('../utils/env-check.js');
+    if (!isServiceConfigured('database')) {
+      return res.status(503).json({ 
+        error: 'Database is not configured',
+        message: 'Please set SUPABASE_URL and SUPABASE_KEY in .env file',
+        stats: {
+          totalUsers: 0,
+          activeUsers: 0,
+          totalAppointments: 0,
+          confirmedAppointments: 0,
+          pendingAppointments: 0,
+          cancelledAppointments: 0,
+          totalPoints: 0,
+          note: 'Database not configured - showing zero values'
+        }
+      });
+    }
+    
     const users = await getAllUsers();
     const appointments = await getUserAppointments(null);
     
@@ -105,7 +124,11 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
     res.json(stats);
   } catch (error) {
     console.error('Error getting stats:', error);
-    res.status(500).json({ error: 'Error getting stats' });
+    res.status(500).json({ 
+      error: 'Error getting stats',
+      message: error.message,
+      ...(process.env.NODE_ENV !== 'production' && { stack: error.stack })
+    });
   }
 });
 

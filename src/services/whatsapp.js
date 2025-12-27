@@ -1,13 +1,14 @@
 import { processUserMessage } from './chatbot.js';
 import { sendWhatsAppMessage } from '../utils/twilio.js';
+import { normalizePhoneNumber } from '../utils/phone-number.js';
 
 /**
  * Handle incoming WhatsApp message
  */
 export async function handleWhatsAppMessage(from, body) {
   try {
-    // Remove 'whatsapp:' prefix from phone number
-    const phoneNumber = from.replace('whatsapp:', '');
+    // Normalize phone number (remove 'whatsapp:' prefix)
+    const phoneNumber = normalizePhoneNumber(from);
     
     // Process message with AI chatbot
     const response = await processUserMessage(phoneNumber, body);
@@ -18,9 +19,10 @@ export async function handleWhatsAppMessage(from, body) {
   } catch (error) {
     console.error('Error handling WhatsApp message:', error);
     // Send error message to user
+    const phoneNumber = normalizePhoneNumber(from);
     await sendWhatsAppMessage(
-      from.replace('whatsapp:', ''),
-      '申し訳ございません。エラーが発生しました。しばらくしてから再度お試しください。'
+      phoneNumber,
+      'Sorry, an error occurred. Please try again later.'
     );
   }
 }

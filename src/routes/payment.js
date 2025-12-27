@@ -71,15 +71,15 @@ router.get('/success', async (req, res) => {
     // Send confirmation via WhatsApp
     await sendWhatsAppMessage(
       phone,
-      `✅ 決済が完了しました！\n\n${points}ポイントが追加されました。\n\nありがとうございます！`
+      `✅ Payment completed!\n\n${points} points have been added to your account.\n\nThank you!`
     );
     
     res.send(`
       <html>
         <body>
-          <h1>✅ 決済が完了しました！</h1>
-          <p>${points}ポイントが追加されました。</p>
-          <p>このページを閉じて、WhatsAppに戻ってください。</p>
+          <h1>✅ Payment Completed!</h1>
+          <p>${points} points have been added to your account.</p>
+          <p>Please close this page and return to WhatsApp.</p>
           <script>
             setTimeout(() => {
               window.close();
@@ -130,7 +130,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       // Send confirmation via WhatsApp
       await sendWhatsAppMessage(
         phoneNumber,
-        `✅ 決済が完了しました！\n\n${points}ポイントが追加されました。`
+        `✅ Payment completed!\n\n${points} points have been added to your account.`
       );
       break;
     
