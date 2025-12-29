@@ -15,5 +15,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  background: linear-gradient(to bottom, #E8F4F8, #F5F0F8);
+  min-height: 100vh;
 }
 
