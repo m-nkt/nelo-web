@@ -16,10 +16,23 @@ export async function getFreeTimeSlots(phoneNumber, startDate, endDate) {
       throw new Error('User calendar not connected');
     }
     
+    // Use BASE_URL for redirect_uri to match the OAuth configuration
+    // DO NOT use localhost fallback - must use BASE_URL
+    const getRedirectUri = () => {
+      if (process.env.GOOGLE_REDIRECT_URI && !process.env.GOOGLE_REDIRECT_URI.includes('localhost')) {
+        return process.env.GOOGLE_REDIRECT_URI;
+      }
+      const baseUrl = process.env.BASE_URL || process.env.APP_URL || process.env.APP_BASE_URL;
+      if (!baseUrl) {
+        throw new Error('BASE_URL is required for Google Calendar OAuth. Please set BASE_URL in .env file.');
+      }
+      return `${baseUrl}/api/calendar/callback`;
+    };
+    
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
+      getRedirectUri()
     );
     
     oauth2Client.setCredentials({
@@ -66,10 +79,23 @@ export async function createCalendarEvent(phoneNumber, startTime, duration, othe
       throw new Error('User calendar not connected');
     }
     
+    // Use BASE_URL for redirect_uri to match the OAuth configuration
+    // DO NOT use localhost fallback - must use BASE_URL
+    const getRedirectUri = () => {
+      if (process.env.GOOGLE_REDIRECT_URI && !process.env.GOOGLE_REDIRECT_URI.includes('localhost')) {
+        return process.env.GOOGLE_REDIRECT_URI;
+      }
+      const baseUrl = process.env.BASE_URL || process.env.APP_URL || process.env.APP_BASE_URL;
+      if (!baseUrl) {
+        throw new Error('BASE_URL is required for Google Calendar OAuth. Please set BASE_URL in .env file.');
+      }
+      return `${baseUrl}/api/calendar/callback`;
+    };
+    
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
+      getRedirectUri()
     );
     
     oauth2Client.setCredentials({

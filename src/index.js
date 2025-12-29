@@ -19,6 +19,11 @@ let PORT = parseInt(process.env.PORT) || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Home page
+app.get('/', (req, res) => {
+  res.send('Nelo is up and running! 🚀');
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

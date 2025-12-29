@@ -32,7 +32,8 @@ if (process.env.NODE_ENV !== 'production') {
     hasTwilioSid: !!process.env.TWILIO_ACCOUNT_SID,
     hasTwilioToken: !!process.env.TWILIO_AUTH_TOKEN,
     hasTwilioNumber: !!process.env.TWILIO_WHATSAPP_NUMBER,
-    hasGeminiKey: !!process.env.GEMINI_API_KEY
+    hasGeminiKey: !!process.env.GEMINI_API_KEY,
+    baseUrl: process.env.BASE_URL || process.env.APP_URL || process.env.APP_BASE_URL || 'https://nelo.so'
   });
 }
 

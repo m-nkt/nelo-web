@@ -13,8 +13,10 @@ export async function handleWhatsAppMessage(from, body) {
     // Process message with AI chatbot
     const response = await processUserMessage(phoneNumber, body);
     
-    // Send response back via WhatsApp
-    await sendWhatsAppMessage(phoneNumber, response);
+    // Only send response if it's not empty (empty means messages were sent via sendMultipleMessages)
+    if (response && response.trim().length > 0) {
+      await sendWhatsAppMessage(phoneNumber, response);
+    }
     
   } catch (error) {
     console.error('Error handling WhatsApp message:', error);

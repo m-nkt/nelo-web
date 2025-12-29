@@ -4,7 +4,87 @@ import { sendWhatsAppMessage } from '../utils/twilio.js';
 import { createAppointmentRecord } from '../db/appointments.js';
 
 /**
- * Find potential matches for a user
+ * Calculate AI-powered match score between two users
+ * Returns { score: 0-100, reason: string, icebreaker: string }
+ */
+export async function calculateMatchScore(userA, userB) {
+  const model = getGeminiModel();
+  if (!model) {
+    // Fallback: basic score without AI
+    return {
+      score: 50,
+      reason: 'You both want to learn each other\'s language.',
+      icebreaker: 'Hello! How are you?'
+    };
+  }
+  
+  try {
+    const prompt = `You are a matchmaking AI for a language learning platform. Analyze these two user profiles and calculate a compatibility score.
+
+User A Profile:
+- Target Language: ${userA.target_language || userA.language_learning || 'Unknown'}
+- Native Language: ${userA.native_language || userA.language_teaching || 'Unknown'}
+- Level: ${userA.user_level || userA.level || 'Unknown'}
+- Interests: ${JSON.stringify(userA.interests || [])}
+- Job Title: ${userA.job_title || 'Not specified'}
+- Matching Goal: ${userA.matching_goal || 'Not specified'}
+- Preferences: ${JSON.stringify(userA.preferences || {})}
+
+User B Profile:
+- Target Language: ${userB.target_language || userB.language_learning || 'Unknown'}
+- Native Language: ${userB.native_language || userB.language_teaching || 'Unknown'}
+- Level: ${userB.user_level || userB.level || 'Unknown'}
+- Interests: ${JSON.stringify(userB.interests || [])}
+- Job Title: ${userB.job_title || 'Not specified'}
+- Matching Goal: ${userB.matching_goal || 'Not specified'}
+- Preferences: ${JSON.stringify(userB.preferences || {})}
+
+Calculate a compatibility score (0-100) based on:
+1. Language complementarity (they should want to learn each other's native language)
+2. Shared interests and hobbies
+3. Complementary goals (e.g., business-focused with business-focused)
+4. Personality fit based on their descriptions
+
+Respond with ONLY valid JSON (no additional text):
+{
+  "score": 0-100,
+  "reason": "Why they are good together (1-2 short sentences, simple words)",
+  "icebreaker": "A simple first question they can ask (use easy words)"
+}
+
+Example response:
+{
+  "score": 85,
+  "reason": "Both like AI and surfing. Both want to learn for work.",
+  "icebreaker": "What do you like about AI? Tell me!"
+}`;
+    
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text().trim();
+    
+    // Parse JSON
+    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const matchData = JSON.parse(jsonText);
+    
+    return {
+      score: Math.min(100, Math.max(0, matchData.score || 50)),
+      reason: matchData.reason || 'You both want to learn each other\'s language.',
+      icebreaker: matchData.icebreaker || 'Hello! How are you?'
+    };
+  } catch (error) {
+    console.error('Error calculating match score:', error);
+    // Fallback
+    return {
+      score: 50,
+      reason: 'You both want to learn each other\'s language.',
+      icebreaker: 'Hello! How are you?'
+    };
+  }
+}
+
+/**
+ * Find potential matches for a user with AI scoring
  */
 export async function findMatches(phoneNumber) {
   try {
@@ -16,41 +96,66 @@ export async function findMatches(phoneNumber) {
     // Get all other users
     const allUsers = await getAllUsers();
     
-    // Filter potential matches
-    const matches = allUsers
+    // Step 1: Filter by essential criteria (language pair and basic availability)
+    const basicMatches = allUsers
       .filter(otherUser => {
         // Don't match with self
         if (otherUser.phone_number === phoneNumber) return false;
         
         // Language match: user wants to learn what other user teaches
         const languageMatch = 
-          user.language_learning === otherUser.language_teaching &&
-          user.language_teaching === otherUser.language_learning;
+          (user.target_language || user.language_learning) === (otherUser.native_language || otherUser.language_teaching) &&
+          (user.native_language || user.language_teaching) === (otherUser.target_language || otherUser.language_learning);
         
         if (!languageMatch) return false;
         
         // Level match: at least one should be native or both intermediate+
+        const userLevel = user.user_level || user.level || 'Intermediate';
+        const otherLevel = otherUser.user_level || otherUser.level || 'Intermediate';
         const levelMatch = 
-          user.level === 'Native' || 
-          otherUser.level === 'Native' ||
-          (user.level === 'Intermediate' && otherUser.level === 'Intermediate') ||
-          (user.level === 'Advanced' && otherUser.level === 'Advanced');
+          userLevel === 'Native' || 
+          otherLevel === 'Native' ||
+          (userLevel === 'Intermediate' && otherLevel === 'Intermediate') ||
+          (userLevel === 'Advanced' && otherLevel === 'Advanced');
         
         return levelMatch;
-      })
-      .map(otherUser => ({
-        phoneNumber: otherUser.phone_number,
-        languageLearning: otherUser.language_learning,
-        languageTeaching: otherUser.language_teaching,
-        level: otherUser.level,
-        trustScore: otherUser.trust_score
-      }));
+      });
     
-    return matches;
+    // Step 2: Get top 5 candidates for AI scoring (to save API costs)
+    const topCandidates = basicMatches.slice(0, 5);
+    
+    // Step 3: Calculate AI scores for top candidates
+    const scoredMatches = await Promise.all(
+      topCandidates.map(async (otherUser) => {
+        const matchScore = await calculateMatchScore(user, otherUser);
+        return {
+          phoneNumber: otherUser.phone_number,
+          languageLearning: otherUser.target_language || otherUser.language_learning,
+          languageTeaching: otherUser.native_language || otherUser.language_teaching,
+          level: otherUser.user_level || otherUser.level,
+          trustScore: otherUser.trust_score || 50,
+          aiScore: matchScore.score,
+          reason: matchScore.reason,
+          icebreaker: matchScore.icebreaker
+        };
+      })
+    );
+    
+    // Sort by AI score (highest first)
+    scoredMatches.sort((a, b) => b.aiScore - a.aiScore);
+    
+    return scoredMatches;
   } catch (error) {
     console.error('Error finding matches:', error);
     throw error;
   }
+}
+
+/**
+ * Check if a match is a "Great Match" (score >= 80)
+ */
+export function isGreatMatch(match) {
+  return match.aiScore >= 80;
 }
 
 /**

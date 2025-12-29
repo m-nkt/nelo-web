@@ -13,17 +13,25 @@ export async function autoMatchAllUsers() {
     console.log('🔄 Starting automatic matching...');
     
     const allUsers = await getAllUsers();
+    
+    // Optimization: Only trigger if there are at least 2 active users who haven't been matched yet
+    const activeUsers = allUsers.filter(user => 
+      user.calendar_access_token && 
+      user.points_balance >= 100 &&
+      (user.state === 'waiting' || user.state === 'matching' || !user.state)
+    );
+    
+    if (activeUsers.length < 2) {
+      console.log(`⏭️  Skipping matching: Only ${activeUsers.length} active user(s) available (need at least 2)`);
+      return;
+    }
+    
     const matchedPairs = new Set(); // Track already matched pairs
     
-    for (const user of allUsers) {
-      // Skip if user doesn't have calendar connected
-      if (!user.calendar_access_token) {
-        continue;
-      }
-      
-      // Skip if user has insufficient points
-      if (user.points_balance < 100) {
-        continue;
+    for (const user of activeUsers) {
+      // User is already filtered to be active, but double-check state
+      if (user.state !== 'waiting' && user.state !== 'matching' && user.state) {
+        continue; // Skip users who are not in matching state
       }
       
       // Find potential matches
@@ -100,6 +108,9 @@ async function findCommonTimeSlot(user1Phone, user2Phone) {
  * Propose match to both users via WhatsApp
  */
 async function proposeMatch(user1Phone, user2Phone, suggestedTime) {
+  // Create a pending match record with 24-hour expiration
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + 24);
   try {
     const user1 = await getUser(user1Phone);
     const user2 = await getUser(user2Phone);
@@ -116,36 +127,30 @@ async function proposeMatch(user1Phone, user2Phone, suggestedTime) {
       minute: '2-digit'
     });
     
-    // Send proposal to user1
+    // Calculate AI match score
+    const { calculateMatchScore, isGreatMatch } = await import('./matching.js');
+    const matchScore = await calculateMatchScore(user1, user2);
+    
+    // Only send if it's a "Great Match" (score >= 80)
+    if (!isGreatMatch({ aiScore: matchScore.score })) {
+      console.log(`⏭️  Match score ${matchScore.score} is below 80, skipping proposal`);
+      return;
+    }
+    
+    // Create brief description of partner
+    const user2Description = `${user2.target_language || user2.language_learning} learner, ${user2.native_language || user2.language_teaching} native, ${user2.user_level || user2.level} level`;
+    const user1Description = `${user1.target_language || user1.language_learning} learner, ${user1.native_language || user1.language_teaching} native, ${user1.user_level || user1.level} level`;
+    
+    // Send proposal to user1 with AI-generated reason and icebreaker
     await sendWhatsAppMessage(
       user1Phone,
-      `🎯 Matching candidate found!\n\n` +
-      `Partner: ${user2Phone}\n` +
-      `Learning: ${user2.language_learning}\n` +
-      `Teaching: ${user2.language_teaching}\n` +
-      `Level: ${user2.level}\n` +
-      `Trust Score: ${user2.trust_score}/100\n\n` +
-      `Proposed Time: ${formattedTime}\n` +
-      `Duration: 15 minutes\n\n` +
-      `Would you like to confirm this match?\n` +
-      `Please reply with "yes" or "no".\n\n` +
-      `Note: Confirming requires 100 points.`
+      `I found someone for you! 🌟\n\nThey are ${user2Description}.\n\n${matchScore.reason}\n\n💬 First question: "${matchScore.icebreaker}"\n\nDo you want to meet them?\n\n⚠️ You have 24 hours. If you do not answer, I will cancel it.`
     );
     
-    // Send proposal to user2
+    // Send proposal to user2 with AI-generated reason and icebreaker
     await sendWhatsAppMessage(
       user2Phone,
-      `🎯 Matching candidate found!\n\n` +
-      `Partner: ${user1Phone}\n` +
-      `Learning: ${user1.language_learning}\n` +
-      `Teaching: ${user1.language_teaching}\n` +
-      `Level: ${user1.level}\n` +
-      `Trust Score: ${user1.trust_score}/100\n\n` +
-      `Proposed Time: ${formattedTime}\n` +
-      `Duration: 15 minutes\n\n` +
-      `Would you like to confirm this match?\n` +
-      `Please reply with "yes" or "no".\n\n` +
-      `Note: Confirming requires 100 points.`
+      `Found a great match for you! 🌟\n\nThey are ${user1Description}.\n\n${matchScore.reason}\n\n💬 Icebreaker: "${matchScore.icebreaker}"\n\nWould you like to meet them?\n\n⚠️ This offer expires in 24 hours. If I don't hear back, it'll be automatically canceled to keep things fair.`
     );
     
     // Save proposal to database (you may want to create a proposals table)

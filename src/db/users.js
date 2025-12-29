@@ -62,13 +62,26 @@ export async function getUserState(phoneNumber) {
       .eq('phone_number', normalizedPhone)
       .single();
     
-    if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+    if (error) {
+      // PGRST116 = not found (this is okay, user is new)
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      // PGRST205 = table doesn't exist (this is okay for new setups)
+      if (error.code === 'PGRST205') {
+        console.warn('⚠️ user_states table does not exist yet. User will be treated as new.');
+        return null;
+      }
       throw error;
     }
     
     return data || null;
   } catch (error) {
     console.error('Error getting user state:', error);
+    // If table doesn't exist, return null (treat as new user)
+    if (error.code === 'PGRST205') {
+      return null;
+    }
     throw error;
   }
 }
@@ -91,10 +104,28 @@ export async function updateUserState(phoneNumber, state) {
         onConflict: 'phone_number'
       });
     
-    if (error) throw error;
+    if (error) {
+      // PGRST205 = table doesn't exist (create it or skip)
+      if (error.code === 'PGRST205') {
+        console.warn('⚠️ user_states table does not exist. State will be stored in users table instead.');
+        // Fallback: store state in users table
+        await updateUser(phoneNumber, { state: state.step || 'registration' });
+        return { phone_number: normalizedPhone, state: state };
+      }
+      throw error;
+    }
     return data;
   } catch (error) {
     console.error('Error updating user state:', error);
+    // If table doesn't exist, try to store in users table as fallback
+    if (error.code === 'PGRST205') {
+      try {
+        await updateUser(phoneNumber, { state: state.step || 'registration' });
+        return { phone_number: normalizePhoneNumber(phoneNumber), state: state };
+      } catch (fallbackError) {
+        console.error('Error in fallback state storage:', fallbackError);
+      }
+    }
     throw error;
   }
 }
@@ -280,3 +311,57 @@ export async function updateUser(phoneNumber, updates) {
   }
 }
 
+/**
+ * Delete user data (for testing/reset)
+ */
+export async function deleteUserData(phoneNumber) {
+  checkDatabase();
+  try {
+    // Normalize phone number to ensure consistency
+    const normalizedPhone = normalizePhoneNumber(phoneNumber);
+    
+    // Delete from all related tables
+    const supabase = getSupabase();
+    
+    // Delete message logs (ignore errors if table doesn't exist)
+    try {
+      await supabase
+        .from('message_logs')
+        .delete()
+        .eq('phone_number', normalizedPhone);
+    } catch (error) {
+      console.warn('⚠️ Could not delete message_logs (table may not exist):', error.message);
+    }
+    
+    // Delete user states (ignore errors if table doesn't exist)
+    try {
+      await supabase
+        .from('user_states')
+        .delete()
+        .eq('phone_number', normalizedPhone);
+    } catch (error) {
+      console.warn('⚠️ Could not delete user_states (table may not exist):', error.message);
+    }
+    
+    // Delete user (this is the most important one)
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('phone_number', normalizedPhone);
+    
+    if (error) {
+      // If user doesn't exist, that's okay - consider it a success
+      if (error.code === 'PGRST116') {
+        console.log(`ℹ️ User ${normalizedPhone} doesn't exist (already deleted or never existed)`);
+        return true;
+      }
+      throw error;
+    }
+    
+    console.log(`✅ User data deleted for ${normalizedPhone}`);
+    return true;
+  } catch (error) {
+    console.error('Error deleting user data:', error);
+    throw error;
+  }
+}

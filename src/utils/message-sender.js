@@ -44,3 +44,38 @@ export async function sendWithFollowUps(phoneNumber, immediateMessage, followUpM
   }
 }
 
+/**
+ * Consolidate multiple messages into a single message (cost-saving)
+ * Joins messages with double newlines to stay within 24-hour session
+ * @param {string[]} messages - Array of messages to consolidate
+ * @returns {string} Consolidated message
+ */
+export function consolidateMessages(messages) {
+  if (!messages || messages.length === 0) return '';
+  if (messages.length === 1) return messages[0];
+  
+  // Filter out empty messages and join with double newlines
+  return messages
+    .filter(msg => msg && msg.trim().length > 0)
+    .join('\n\n');
+}
+
+/**
+ * Send consolidated message (cost-saving alternative to sendMultipleMessages)
+ * @param {string} phoneNumber - Normalized phone number
+ * @param {string[]} messages - Array of messages to consolidate and send
+ */
+export async function sendConsolidatedMessage(phoneNumber, messages) {
+  if (!messages || messages.length === 0) return;
+  
+  const consolidated = consolidateMessages(messages);
+  if (consolidated) {
+    try {
+      await sendWhatsAppMessage(phoneNumber, consolidated);
+    } catch (error) {
+      console.error('Error sending consolidated message:', error);
+      throw error;
+    }
+  }
+}
+
