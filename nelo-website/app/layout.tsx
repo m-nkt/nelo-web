@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Playfair_Display, Inter, Space_Grotesk, DM_Sans } from 'next/font/google'
 import './globals.css'
 
@@ -29,6 +30,16 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Nelo - Text to Friend',
   description: 'Make friends around the world. The easiest way to meet people you actually want to talk to.',
+  openGraph: {
+    title: 'nelo | 15分で世界中に友達ができる',
+    description: 'メッセージ不要。いきなり15分のトーク。最先端の言語マッチングサービス。',
+    images: ['https://nelo.so/og-image.jpg'],
+    url: 'https://nelo.so',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 export default function RootLayout({
@@ -39,6 +50,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${playfair.variable} ${inter.variable} ${spaceGrotesk.variable} ${dmSans.variable} font-sans antialiased`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-PTG1NT8K0R"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-PTG1NT8K0R');
+          `}
+        </Script>
         {children}
       </body>
     </html>
