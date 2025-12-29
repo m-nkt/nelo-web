@@ -297,14 +297,14 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto">
             {[
               {
-                title: 'Talk with language friends\n\n',
+                title: 'Talk with language friends',
                 description: 'Make friends who are learning and speaking the same language as you.',
                 image: '/What_is_Nelo_01.jpg',
               },
               {
-                title: 'Talk new friends\nwho share your interests',
+                title: 'Talk new friends just for fun',
                 description: 'Music, games, anime, life.',
-                subDescription: 'Find people you actually want to talk to.',
+                subDescription: 'This is not a language class.\nJust real conversations around what you love.',
                 image: '/What_is_Nelo_02.jpg',
               },
               {
@@ -314,9 +314,9 @@ export default function Home() {
                 image: '/What_is_Nelo_03.jpg',
               },
               {
-                title: 'No Messages',
-                description: 'A 15 minute conversation, already scheduled.',
-                subDescription: 'Just show up and talk.',
+                title: 'No messages. Just talk.',
+                description: 'A 15-minute conversation. Already scheduled.',
+                subDescription: 'No messages, no coordination. Just talk.',
                 image: '/What_is_Nelo_04.jpg',
               },
             ].map((feature, index) => (
@@ -343,14 +343,12 @@ export default function Home() {
                 </div>
                 
                 {/* Description */}
-                <p className="text-base text-gray-600 font-sans leading-relaxed">
+                <p className="text-base text-gray-600 font-sans leading-relaxed whitespace-pre-line">
                   {feature.description}
                   {feature.subDescription && (
                     <>
                       <br />
-                      <span className="text-gray-600">
-                        {feature.subDescription}
-                      </span>
+                      {feature.subDescription}
                     </>
                   )}
                 </p>
