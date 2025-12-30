@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   title: 'Nelo - Text to Friend',
   description: 'Make friends around the world. The easiest way to meet people you actually want to talk to.',
   openGraph: {
-    title: 'nelo | 15分で世界中に友達ができる',
-    description: 'メッセージ不要。いきなり15分のトーク。最先端の言語マッチングサービス。',
+    title: 'nelo | New friends, anywhere',
+    description: 'No messages. No coordination. A 15-minute conversation, matched for you.',
     images: ['https://nelo.so/og-image.jpg'],
     url: 'https://nelo.so',
     type: 'website',
