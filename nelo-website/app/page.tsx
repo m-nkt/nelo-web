@@ -17,6 +17,7 @@ const tags = [
   'Remote workers',
   'Music lovers',
   'Game fans'
+
 ]
 
 const fadeInUp = {
@@ -24,6 +25,7 @@ const fadeInUp = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }
 }
+ 
 
 const staggerContainer = {
   animate: {
