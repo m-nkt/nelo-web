@@ -187,6 +187,12 @@ export async function processUserMessage(phoneNumber, message) {
       return await handleConfirmation(phoneNumber, message, stateData);
     }
 
+    // Handle suggestion response (Level 2)
+    if (currentState === 'reviewing_suggestions') {
+      const { handleSuggestionResponse } = await import('./matchingService.js');
+      return await handleSuggestionResponse(phoneNumber, message);
+    }
+
     // Registered user - normal conversation (includes 'matching' and 'waiting' states)
     if (currentState === 'registered' || currentState === 'matching' || currentState === 'waiting') {
       // Check daily AI limit (10 times per day)

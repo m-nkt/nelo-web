@@ -2,6 +2,23 @@ import { getAllUsers, getUser, updateUserPoints } from '../db/users.js';
 import { getFreeTimeSlots, createCalendarEvent } from './calendar.js';
 import { sendWhatsAppMessage } from '../utils/twilio.js';
 import { createAppointmentRecord } from '../db/appointments.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Gemini only if API key is provided
+const genAI = process.env.GEMINI_API_KEY
+  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+  : null;
+
+// Get Gemini model
+const getGeminiModel = () => {
+  if (!genAI) return null;
+  try {
+    return genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  } catch (error) {
+    console.error('Gemini model initialization failed:', error);
+    return null;
+  }
+};
 
 /**
  * Calculate AI-powered match score between two users

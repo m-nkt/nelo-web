@@ -4,65 +4,16 @@ import { getFreeTimeSlots } from './calendar.js';
 import { sendWhatsAppMessage } from '../utils/twilio.js';
 import { createAppointmentRecord } from '../db/appointments.js';
 import { updateUserPoints } from '../db/users.js';
+import { executeMatchingStrategy } from './matchingService.js';
 
 /**
  * Automatically find and propose matches for all users
+ * Now uses the new matching strategy (Level 1 & Level 2)
  */
 export async function autoMatchAllUsers() {
   try {
-    console.log('🔄 Starting automatic matching...');
-    
-    const allUsers = await getAllUsers();
-    
-    // Optimization: Only trigger if there are at least 2 active users who haven't been matched yet
-    const activeUsers = allUsers.filter(user => 
-      user.calendar_access_token && 
-      user.points_balance >= 100 &&
-      (user.state === 'waiting' || user.state === 'matching' || !user.state)
-    );
-    
-    if (activeUsers.length < 2) {
-      console.log(`⏭️  Skipping matching: Only ${activeUsers.length} active user(s) available (need at least 2)`);
-      return;
-    }
-    
-    const matchedPairs = new Set(); // Track already matched pairs
-    
-    for (const user of activeUsers) {
-      // User is already filtered to be active, but double-check state
-      if (user.state !== 'waiting' && user.state !== 'matching' && user.state) {
-        continue; // Skip users who are not in matching state
-      }
-      
-      // Find potential matches
-      const matches = await findMatches(user.phone_number);
-      
-      for (const match of matches) {
-        // Create unique pair key to avoid duplicate matches
-        const pairKey = [user.phone_number, match.phoneNumber].sort().join('-');
-        
-        if (matchedPairs.has(pairKey)) {
-          continue; // Already matched this pair
-        }
-        
-        // Check if match has calendar connected and enough points
-        const matchUser = await getUser(match.phoneNumber);
-        if (!matchUser || !matchUser.calendar_access_token || matchUser.points_balance < 100) {
-          continue;
-        }
-        
-        // Try to find common available time slots
-        const commonTime = await findCommonTimeSlot(user.phone_number, match.phoneNumber);
-        
-        if (commonTime) {
-          // Propose match via WhatsApp
-          await proposeMatch(user.phone_number, match.phoneNumber, commonTime);
-          matchedPairs.add(pairKey);
-        }
-      }
-    }
-    
-    console.log('✅ Automatic matching completed');
+    // Use the new matching strategy
+    await executeMatchingStrategy();
   } catch (error) {
     console.error('❌ Error in automatic matching:', error);
   }
