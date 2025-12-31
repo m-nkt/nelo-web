@@ -23,7 +23,7 @@ const tags = [
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }
+  transition: { duration: 1.0, ease: [0.6, -0.05, 0.01, 0.99] }
 }
  
 
@@ -38,9 +38,11 @@ const staggerContainer = {
 export default function Home() {
   const [intent, setIntent] = useState('')
   const { scrollY } = useScroll()
-  const backgroundY = useTransform(scrollY, [0, 500], [0, 150])
-  const backgroundOpacity = useTransform(scrollY, [300, 600], [1, 0])
-  const whiteBackgroundOpacity = useTransform(scrollY, [300, 600], [0, 1])
+  // より滑らかで自然な動き：移動距離を半分に、スクロール範囲を広げて過敏さを軽減
+  // スクロール範囲を広げることで、より滑らかで過敏でない動きに
+  const backgroundY = useTransform(scrollY, [0, 800], [0, 75])
+  const backgroundOpacity = useTransform(scrollY, [400, 800], [1, 0])
+  const whiteBackgroundOpacity = useTransform(scrollY, [400, 800], [0, 1])
 
   const handleTagClick = (tag: string) => {
     if (intent.trim()) {
@@ -77,11 +79,16 @@ export default function Home() {
               style={{
           backgroundImage: 'url(/background.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
+          backgroundAttachment: 'scroll',
           y: backgroundY,
           opacity: backgroundOpacity,
+        }}
+        transition={{
+          type: "tween",
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3
         }}
       >
         {/* Animated gradient overlay */}
@@ -129,7 +136,7 @@ export default function Home() {
           </motion.div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+          <nav className="flex items-center gap-4 md:gap-6 lg:gap-8">
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -138,7 +145,7 @@ export default function Home() {
                       className={twMerge(
                         clsx(
                           "bg-black text-white rounded-lg",
-                          "px-5 py-2.5 text-sm font-medium",
+                          "px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-medium",
                           "hover:bg-gray-900 transition-all",
                           "shadow-sm"
                         )
@@ -153,7 +160,7 @@ export default function Home() {
       </motion.header>
 
           {/* Main Hero Section */}
-          <main className="relative z-20 pt-20 md:pt-28 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
+          <main className="relative z-20 pt-40 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
         <motion.div
           variants={staggerContainer}
           initial="initial"
@@ -163,10 +170,11 @@ export default function Home() {
           {/* Hero Title with Playfair Display */}
           <motion.h1
             variants={fadeInUp}
-            className="font-serif text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-8 md:mb-10 leading-tight tracking-tight whitespace-nowrap"
+            className="font-serif text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-10 md:mb-12 leading-tight tracking-tight md:tracking-normal"
             style={{ textShadow: '0 2px 20px rgba(0,0,0,0.1)' }}
           >
-            New Friends, Everywhere.
+            New Friends,<br className="md:hidden" />
+            <span className="hidden md:inline"> </span>Everywhere.
           </motion.h1>
 
           {/* Subtitle */}
@@ -175,9 +183,16 @@ export default function Home() {
             className="mb-12 md:mb-16"
           >
             <p className="text-lg md:text-xl lg:text-2xl text-white font-light leading-tight max-w-2xl mx-auto font-sans">
-              Make friends around the world.
-              <br />
-              The easiest way to meet people you actually want to talk to.
+              <span className="md:hidden">
+                Make friends around the world.<br />
+                The easiest way to meet people<br />
+                you actually want to talk to.
+              </span>
+              <span className="hidden md:inline">
+                Make friends around the world.
+                <br />
+                The easiest way to meet people you actually want to talk to.
+              </span>
             </p>
           </motion.div>
 
@@ -197,9 +212,9 @@ export default function Home() {
                     "focus-within:shadow-2xl"
                   )
                 )}>
-                  <div className="flex-1 relative flex items-center">
+                  <div className="flex-1 relative flex items-center min-h-[3rem]">
                     {!intent && (
-                      <div className="absolute inset-0 flex flex-col justify-center items-start pointer-events-none">
+                      <div className="absolute inset-0 flex flex-col justify-center items-start pointer-events-none px-0">
                         <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70">Who would you like to talk to?</span>
                         <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70">e.g. Someone who speaks Spanish and loves movies.</span>
                       </div>
@@ -209,7 +224,11 @@ export default function Home() {
                 value={intent}
                 onChange={(e) => setIntent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                      className="w-full bg-transparent border-none outline-none text-gray-400 text-sm md:text-base font-light pr-4 text-left opacity-70"
+                onFocus={() => {
+                  // モバイルでのフォーカス時に確実にプレースホルダーを非表示
+                }}
+                placeholder=""
+                className="w-full bg-transparent border-none outline-none text-gray-400 text-sm md:text-base font-light pr-4 text-left opacity-70 min-h-[3rem]"
               />
                   </div>
               {/* Single circular button with arrow up */}
@@ -266,18 +285,7 @@ export default function Home() {
       </main>
 
       {/* Features Section */}
-      <section className="relative z-20 py-20 md:py-32 px-6 md:px-8 overflow-hidden">
-        {/* Background Image from Unsplash */}
-        <motion.div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            opacity: 0.1,
-          }}
-        />
+      <section className="relative z-20 py-20 md:py-32 px-6 md:px-8 overflow-hidden bg-gray-50">
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -287,10 +295,7 @@ export default function Home() {
             className="text-center mb-16"
           >
             <motion.h2
-              className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 font-normal"
-              style={{
-                color: useTransform(scrollY, [300, 600], ['rgb(255, 255, 255)', 'rgb(75, 85, 99)']),
-              }}
+              className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 font-normal text-gray-700"
             >
               What is Nelo?
             </motion.h2>
@@ -300,11 +305,11 @@ export default function Home() {
             {[
               {
                 title: 'Talk with language friends',
-                description: 'Make friends who are learning and speaking the same language as you.',
+                description: 'Make friends with people who are learning and speaking the same language as you.',
                 image: '/What_is_Nelo_01.jpg',
               },
               {
-                title: 'Talk new friends just for fun',
+                title: 'Talk with new friends just for fun',
                 description: 'Music, games, anime, life.',
                 subDescription: 'This is not a language class.\nJust real conversations around what you love.',
                 image: '/What_is_Nelo_02.jpg',
