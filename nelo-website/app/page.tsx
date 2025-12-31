@@ -67,15 +67,49 @@ export default function Home() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit(e)
+      const finalIntent = intent.trim() || 'General Interest'
+      const url = `${TALLY_URL}?intent=${encodeURIComponent(finalIntent)}`
+      window.open(url, '_blank')
     }
   }
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Background Image with Parallax */}
+      {/* Background Image with Parallax - Mobile */}
             <motion.div
-        className="fixed inset-0 z-0"
+        className="fixed inset-0 z-0 md:hidden"
+              style={{
+          backgroundImage: 'url(/background_mobile.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'scroll',
+          y: backgroundY,
+          opacity: backgroundOpacity,
+        }}
+        transition={{
+          type: "tween",
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3
+        }}
+      >
+        {/* Animated gradient overlay */}
+          <motion.div
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"
+            animate={{
+            opacity: [0.05, 0.1, 0.05],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+      </motion.div>
+
+      {/* Background Image with Parallax - Desktop */}
+            <motion.div
+        className="hidden md:block fixed inset-0 z-0"
               style={{
           backgroundImage: 'url(/background.jpg)',
           backgroundSize: 'cover',
@@ -160,7 +194,7 @@ export default function Home() {
       </motion.header>
 
           {/* Main Hero Section */}
-          <main className="relative z-20 pt-40 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
+          <main className="relative z-20 pt-64 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
         <motion.div
           variants={staggerContainer}
           initial="initial"
@@ -170,7 +204,7 @@ export default function Home() {
           {/* Hero Title with Playfair Display */}
           <motion.h1
             variants={fadeInUp}
-            className="font-serif text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-10 md:mb-12 leading-tight tracking-tight md:tracking-normal"
+            className="font-serif text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-6 md:mb-12 leading-tight tracking-tight md:tracking-normal"
             style={{ textShadow: '0 2px 20px rgba(0,0,0,0.1)' }}
           >
             New Friends,<br className="md:hidden" />
@@ -180,7 +214,7 @@ export default function Home() {
           {/* Subtitle */}
           <motion.div
             variants={fadeInUp}
-            className="mb-12 md:mb-16"
+            className="mb-6 md:mb-16"
           >
             <p className="text-lg md:text-xl lg:text-2xl text-white font-light leading-tight max-w-2xl mx-auto font-sans">
               <span className="md:hidden">
@@ -205,7 +239,7 @@ export default function Home() {
                 <div className={twMerge(
                   clsx(
                     "relative flex items-center",
-                    "bg-white rounded-full",
+                    "bg-white rounded-[12px]",
                     "border border-gray-200 shadow-xl",
                     "px-6 md:px-8 py-4 md:py-5",
                     "transition-all",
@@ -243,7 +277,7 @@ export default function Home() {
                     "flex items-center justify-center",
                     "hover:bg-gray-900 transition-all",
                     "flex-shrink-0 shadow-lg",
-                    "self-end mb-0.5"
+                    "self-end mb-0 mr-0"
                   )
                 )}
               >
