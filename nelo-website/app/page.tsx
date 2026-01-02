@@ -5,6 +5,7 @@ import { ArrowUp } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import Image from 'next/image'
 
 const TALLY_URL = 'https://tally.so/r/jabRR6'
 
@@ -375,11 +376,13 @@ export default function Home() {
                 </h3>
                 
                 {/* Graphic/Image - Taller */}
-                <div className="mb-6 h-40 md:h-52 lg:h-64 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                  <img
+                <div className="mb-6 h-40 md:h-52 lg:h-64 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center relative">
+                  <Image
                     src={feature.image}
                     alt={feature.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
                 
