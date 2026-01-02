@@ -1,11 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { ArrowUp } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+// 動的インポートで遅延読み込み
+const FeaturesSection = dynamic(() => import('./components/FeaturesSection'), {
+  ssr: true,
+  loading: () => <div className="h-96 bg-gray-50" />,
+})
+
+const WaitlistSection = dynamic(() => import('./components/WaitlistSection'), {
+  ssr: true,
+  loading: () => <div className="h-96" />,
+})
+
+const Footer = dynamic(() => import('./components/Footer'), {
+  ssr: true,
+})
 
 const TALLY_URL = 'https://tally.so/r/jabRR6'
 
@@ -21,10 +37,11 @@ const tags = [
 
 ]
 
+// ヒーローセクション用の高速アニメーション（LCP改善のため）
 const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 1.0, ease: [0.6, -0.05, 0.01, 0.99] }
+  transition: { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }
 }
  
 
@@ -39,8 +56,8 @@ const staggerContainer = {
 export default function Home() {
   const [intent, setIntent] = useState('')
   const { scrollY } = useScroll()
-  // より滑らかで自然な動き：移動距離を半分に、スクロール範囲を広げて過敏さを軽減
-  // スクロール範囲を広げることで、より滑らかで過敏でない動きに
+  
+  // スクロールアニメーションの最適化
   const backgroundY = useTransform(scrollY, [0, 800], [0, 75])
   const backgroundOpacity = useTransform(scrollY, [400, 800], [1, 0])
   const whiteBackgroundOpacity = useTransform(scrollY, [400, 800], [0, 1])
@@ -79,11 +96,11 @@ export default function Home() {
       {/* Background Image with Parallax - Mobile */}
             <motion.div
         className="fixed inset-0 z-0 md:hidden"
-        style={{
+              style={{
           y: backgroundY,
           opacity: backgroundOpacity,
-        }}
-        transition={{
+              }}
+              transition={{
           type: "tween",
           ease: [0.25, 0.1, 0.25, 1],
           duration: 0.3
@@ -115,13 +132,13 @@ export default function Home() {
       </motion.div>
 
       {/* Background Image with Parallax - Desktop */}
-            <motion.div
+          <motion.div
         className="hidden md:block fixed inset-0 z-0"
         style={{
           y: backgroundY,
           opacity: backgroundOpacity,
-        }}
-        transition={{
+            }}
+            transition={{
           type: "tween",
           ease: [0.25, 0.1, 0.25, 1],
           duration: 0.3
@@ -206,7 +223,7 @@ export default function Home() {
         </div>
       </motion.header>
 
-          {/* Main Hero Section */}
+      {/* Main Hero Section */}
           <main className="relative z-20 pt-64 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
         <motion.div
           variants={staggerContainer}
@@ -236,7 +253,7 @@ export default function Home() {
                 that matter.
               </span>
               <span className="hidden md:inline">
-                Make friends around the world.
+              Make friends around the world.
                 <br />
                 And keep talking to the ones that matter.
               </span>
@@ -331,227 +348,14 @@ export default function Home() {
         </motion.div>
       </main>
 
-      {/* Features Section */}
-      <section className="relative z-20 py-20 md:py-32 px-6 md:px-8 overflow-hidden bg-gray-50">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <motion.h2
-              className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 font-normal text-gray-700"
-            >
-              What is Nelo?
-            </motion.h2>
-          </motion.div>
+      {/* Features Section - 動的インポートで遅延読み込み */}
+      <FeaturesSection />
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto">
-            {[
-              {
-                title: 'Talk language partners,\nnot strangers.',
-                description: 'Meet people who are serious about building a real language partnership. Learn together, or exchange languages with native speakers.',
-                image: '/What_is_Nelo_01.jpg',
-              },
-              {
-                title: 'Talk with people who share your interests.',
-                description: 'Music, games, anime, life.',
-                subDescription: 'This is not a language class.\nJust real conversations around what you love.',
-                image: '/What_is_Nelo_02.jpg',
-              },
-              {
-                title: 'We schedule it for you.',
-                description: 'No ghosting. No endless chatting.',
-                subDescription: 'We match you and book the conversation.',
-                image: '/What_is_Nelo_03.jpg',
-              },
-              {
-                title: 'Your connections don\'t fade.',
-                description: 'Reconnect with people you enjoyed talking to.',
-                subDescription: 'Turn one good conversation into something ongoing.',
-                image: '/What_is_Nelo_04.jpg',
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 md:p-8 border border-gray-200 shadow-sm hover:shadow-md transition-all"
-              >
-                {/* Title */}
-                <h3 className="font-modern text-xl md:text-2xl font-medium mb-6 text-gray-700 whitespace-pre-line tracking-tight">
-                  {feature.title}
-                </h3>
-                
-                {/* Graphic/Image - Taller */}
-                <div className="mb-6 h-40 md:h-52 lg:h-64 rounded-lg overflow-hidden bg-gray-50 relative">
-                  <Image
-                    src={feature.image}
-                    alt={feature.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    priority={index === 0}
-                    quality={85}
-                  />
-                </div>
-                
-                {/* Description */}
-                <p className="text-base text-gray-600 font-sans leading-relaxed whitespace-pre-line">
-                  {feature.description}
-                  {feature.subDescription && (
-                    <>
-                      <br />
-                      {feature.subDescription}
-                    </>
-                  )}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Pre-registration Section - 動的インポートで遅延読み込み */}
+      <WaitlistSection />
 
-      {/* Pre-registration Section */}
-      <section className="relative z-20 py-20 md:py-32 px-6 md:px-8">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <motion.h2 
-              className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 font-normal"
-              style={{
-                color: useTransform(scrollY, [300, 600], ['rgb(255, 255, 255)', 'rgb(75, 85, 99)']),
-              }}
-            >
-              Join the Waitlist
-            </motion.h2>
-            <motion.p 
-              className="text-xl md:text-2xl font-light font-sans"
-              style={{
-                color: useTransform(scrollY, [300, 600], ['rgba(255, 255, 255, 0.9)', 'rgba(75, 85, 99, 1)']),
-              }}
-            >
-              Be among the first to experience Nelo.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-md mx-auto"
-          >
-            <motion.button
-              onClick={handleJoinWaitlist}
-              whileHover={{ 
-                scale: 1.02,
-                y: -2,
-              }}
-              whileTap={{ scale: 0.98 }}
-              className={twMerge(
-                clsx(
-                  "w-full bg-black text-white rounded-full",
-                  "px-8 py-4 text-base font-medium",
-                  "hover:bg-gray-900 transition-all",
-                  "shadow-xl relative overflow-hidden"
-                )
-              )}
-            >
-              <span className="relative z-10">
-                Join Waitlist
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                initial={{ x: '-100%' }}
-                whileHover={{ x: '100%' }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              />
-            </motion.button>
-            <motion.p 
-              className="text-sm text-center mt-4 font-normal font-sans"
-              style={{
-                color: useTransform(scrollY, [300, 600], ['rgba(255, 255, 255, 0.7)', 'rgba(75, 85, 99, 1)']),
-              }}
-            >
-              We'll email you when it's ready.
-              <br />
-              No spam. Just your invite.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer with Stylized Logo */}
-      <footer className="relative z-20 py-20 md:py-32 px-6 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <h2 
-              className="text-8xl md:text-9xl lg:text-[12rem] font-bold leading-none tracking-tight"
-              style={{
-                fontFamily: 'Playfair Display, serif',
-                fontStyle: 'italic',
-                fontWeight: 400,
-              }}
-            >
-              <span
-                className="inline-block"
-                style={{
-                  backgroundImage: 'url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                ne
-              </span>
-              <span
-                className="inline-block"
-                style={{
-                  background: 'linear-gradient(135deg, #87CEEB 0%, #4682B4 50%, #1E90FF 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                lo
-              </span>
-            </h2>
-          </motion.div>
-        </div>
-      </footer>
-
-      {/* Copyright - Bottom of page */}
-      <div className="relative z-20 py-8 px-6 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-sm text-gray-500"
-          >
-            Copyright © 2025. Nelo. All rights reserved.
-          </motion.p>
-        </div>
-      </div>
+      {/* Footer - 動的インポートで遅延読み込み */}
+      <Footer />
     </div>
   )
 }

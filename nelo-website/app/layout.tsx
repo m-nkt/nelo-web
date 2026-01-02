@@ -7,12 +7,14 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
   display: 'swap',
+  preload: true, // ヒーローセクションで使用するため優先読み込み
 })
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: true, // サブタイトルで使用するため優先読み込み
 })
 
 const spaceGrotesk = Space_Grotesk({
@@ -52,9 +54,9 @@ export default function RootLayout({
       <body className={`${playfair.variable} ${inter.variable} ${spaceGrotesk.variable} ${dmSans.variable} font-sans antialiased`}>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-PTG1NT8K0R"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
