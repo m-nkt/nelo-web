@@ -207,8 +207,8 @@ export default function Home() {
             className="font-serif text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-6 md:mb-12 leading-tight tracking-tight md:tracking-normal"
             style={{ textShadow: '0 2px 20px rgba(0,0,0,0.1)' }}
           >
-            New Friends,<br className="md:hidden" />
-            <span className="hidden md:inline"> </span>Everywhere.
+            New friends.<br className="md:hidden" />
+            <span className="hidden md:inline"> </span>That last.
           </motion.h1>
 
           {/* Subtitle */}
@@ -219,13 +219,13 @@ export default function Home() {
             <p className="text-lg md:text-xl lg:text-2xl text-white font-light leading-tight max-w-2xl mx-auto font-sans">
               <span className="md:hidden">
                 Make friends around the world.<br />
-                The easiest way to meet people<br />
-                you actually want to talk to.
+                And keep talking to the ones<br />
+                that matter.
               </span>
               <span className="hidden md:inline">
                 Make friends around the world.
                 <br />
-                The easiest way to meet people you actually want to talk to.
+                And keep talking to the ones that matter.
               </span>
             </p>
           </motion.div>
@@ -338,26 +338,26 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto">
             {[
               {
-                title: 'Talk with language friends',
-                description: 'Make friends with people who are learning and speaking the same language as you.',
+                title: 'Talk language partners,\nnot strangers.',
+                description: 'Meet people who are serious about building a real language partnership. Learn together, or exchange languages with native speakers.',
                 image: '/What_is_Nelo_01.jpg',
               },
               {
-                title: 'Talk with new friends just for fun',
+                title: 'Talk with people who share your interests.',
                 description: 'Music, games, anime, life.',
                 subDescription: 'This is not a language class.\nJust real conversations around what you love.',
                 image: '/What_is_Nelo_02.jpg',
               },
               {
-                title: 'Voice only',
-                description: 'No profiles. No personal info.',
-                subDescription: 'Just a 15 minute conversation.',
+                title: 'We schedule it for you.',
+                description: 'No ghosting. No endless chatting.',
+                subDescription: 'We match you and book the conversation.',
                 image: '/What_is_Nelo_03.jpg',
               },
               {
-                title: 'No messages. Just talk.',
-                description: 'A 15-minute conversation. Already scheduled.',
-                subDescription: 'No messages, no coordination. Just talk.',
+                title: 'Your connections don\'t fade.',
+                description: 'Reconnect with people you enjoyed talking to.',
+                subDescription: 'Turn one good conversation into something ongoing.',
                 image: '/What_is_Nelo_04.jpg',
               },
             ].map((feature, index) => (
