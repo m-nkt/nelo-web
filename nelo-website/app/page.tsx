@@ -79,12 +79,7 @@ export default function Home() {
       {/* Background Image with Parallax - Mobile */}
             <motion.div
         className="fixed inset-0 z-0 md:hidden"
-              style={{
-          backgroundImage: 'url(/background_mobile.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center top',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'scroll',
+        style={{
           y: backgroundY,
           opacity: backgroundOpacity,
         }}
@@ -94,9 +89,20 @@ export default function Home() {
           duration: 0.3
         }}
       >
+        <div className="absolute inset-0">
+          <Image
+            src="/background_mobile.jpg"
+            alt="Background"
+            fill
+            priority
+            className="object-cover object-center-top"
+            sizes="100vw"
+            quality={85}
+          />
+        </div>
         {/* Animated gradient overlay */}
           <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10 z-10"
             animate={{
             opacity: [0.05, 0.1, 0.05],
             }}
@@ -111,12 +117,7 @@ export default function Home() {
       {/* Background Image with Parallax - Desktop */}
             <motion.div
         className="hidden md:block fixed inset-0 z-0"
-              style={{
-          backgroundImage: 'url(/background.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center top',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'scroll',
+        style={{
           y: backgroundY,
           opacity: backgroundOpacity,
         }}
@@ -126,9 +127,20 @@ export default function Home() {
           duration: 0.3
         }}
       >
+        <div className="absolute inset-0">
+          <Image
+            src="/background.jpg"
+            alt="Background"
+            fill
+            priority
+            className="object-cover object-center-top"
+            sizes="100vw"
+            quality={85}
+          />
+        </div>
         {/* Animated gradient overlay */}
           <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10 z-10"
             animate={{
             opacity: [0.05, 0.1, 0.05],
             }}
@@ -376,13 +388,15 @@ export default function Home() {
                 </h3>
                 
                 {/* Graphic/Image - Taller */}
-                <div className="mb-6 h-40 md:h-52 lg:h-64 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center relative">
+                <div className="mb-6 h-40 md:h-52 lg:h-64 rounded-lg overflow-hidden bg-gray-50 relative">
                   <Image
                     src={feature.image}
                     alt={feature.title}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={index === 0}
+                    quality={85}
                   />
                 </div>
                 
