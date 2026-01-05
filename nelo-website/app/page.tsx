@@ -30,11 +30,13 @@ const tags = [
   'Spanish speakers',
   'French speakers',
   'Japanese speakers',
-  'Startup workers',
-  'Remote workers',
   'Music lovers',
-  'Game fans'
-
+  'Game fans',
+  'Travelers',
+  'Foodies',
+  'Entrepreneurs',
+  'ISFJ Matches',
+  'ENFP Matches',
 ]
 
 // ヒーローセクション用の高速アニメーション（LCP改善のため）

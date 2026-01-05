@@ -5,14 +5,13 @@ import Image from 'next/image'
 
 const features = [
   {
-    title: 'Talk language partners,\nnot strangers.',
+    title: 'Talk language partners, not strangers.',
     description: 'Meet people who are serious about building a real language partnership. Learn together, or exchange languages with native speakers.',
     image: '/What_is_Nelo_01.jpg',
   },
   {
-    title: 'Talk with people who share your interests.',
-    description: 'Music, games, anime, life.',
-    subDescription: 'This is not a language class.\nJust real conversations around what you love.',
+    title: 'Match by personality and interests.',
+    description: 'Find language partners through shared interests like music, games, or anime, along with MBTI to help conversations feel natural.',
     image: '/What_is_Nelo_02.jpg',
   },
   {
