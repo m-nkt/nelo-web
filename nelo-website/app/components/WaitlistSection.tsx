@@ -38,7 +38,7 @@ export default function WaitlistSection() {
               color: useTransform(scrollY, [300, 600], ['rgba(255, 255, 255, 0.9)', 'rgba(75, 85, 99, 1)']),
             }}
           >
-            Be among the first to experience Nelo.
+            Start building international friendships that last.
           </motion.p>
         </motion.div>
 
@@ -90,4 +90,5 @@ export default function WaitlistSection() {
     </section>
   )
 }
+
 

@@ -28,8 +28,9 @@ const TALLY_URL = 'https://tally.so/r/jabRR6'
 const tags = [
   'English speakers',
   'Spanish speakers',
-  'French speakers',
   'Japanese speakers',
+  'man',
+  'woman',
   'Music lovers',
   'Game fans',
   'Travelers',
@@ -84,7 +85,7 @@ export default function Home() {
     window.open(url, '_blank')
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       const finalIntent = intent.trim() || 'General Interest'
@@ -226,7 +227,7 @@ export default function Home() {
       </motion.header>
 
       {/* Main Hero Section */}
-          <main className="relative z-20 pt-64 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
+          <main className="relative z-20 pt-80 md:pt-48 pb-20 flex items-center justify-center min-h-screen px-6 md:px-8">
         <motion.div
           variants={staggerContainer}
           initial="initial"
@@ -236,11 +237,17 @@ export default function Home() {
           {/* Hero Title with Playfair Display */}
           <motion.h1
             variants={fadeInUp}
-            className="font-serif text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-8xl font-normal text-white mb-6 md:mb-12 leading-tight tracking-tight md:tracking-normal"
+            className="font-serif text-6xl sm:text-7xl md:text-[7rem] lg:text-[8rem] xl:text-[9rem] font-normal text-white mb-6 md:mb-12 leading-tight tracking-tight md:tracking-normal"
             style={{ textShadow: '0 2px 20px rgba(0,0,0,0.1)' }}
           >
-            New friends.<br className="md:hidden" />
-            <span className="hidden md:inline"> </span>That last.
+            <span className="md:hidden">
+              New friends.<br />
+              That last.
+            </span>
+            <span className="hidden md:inline">
+              New friends.<br />
+              That last.
+            </span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -255,8 +262,7 @@ export default function Home() {
                 that matter.
               </span>
               <span className="hidden md:inline">
-              Make friends around the world.
-                <br />
+                Make friends around the world.<br />
                 And keep talking to the ones that matter.
               </span>
             </p>
@@ -270,31 +276,49 @@ export default function Home() {
           >
                 <div className={twMerge(
                   clsx(
-                    "relative flex items-center",
+                    "relative flex items-start",
                     "bg-white rounded-[12px]",
                     "border border-gray-200 shadow-xl",
-                    "px-6 md:px-8 py-4 md:py-5",
+                    "px-4 py-3 md:px-8 md:py-5",
                     "transition-all",
                     "focus-within:shadow-2xl"
                   )
                 )}>
-                  <div className="flex-1 relative flex items-center min-h-[3rem]">
+                  <div className="flex-1 relative flex items-start min-h-[4rem] md:min-h-[3rem] bg-white rounded-lg py-2 md:py-0">
                     {!intent && (
-                      <div className="absolute inset-0 flex flex-col justify-center items-start pointer-events-none px-0">
-                        <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70">Who would you like to talk to?</span>
-                        <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70">e.g. Someone who speaks Spanish and loves movies.</span>
+                      <div className="absolute inset-0 flex flex-col justify-center items-start pointer-events-none px-0 pt-2 md:pt-0">
+                        <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70 pl-0">Who would you like to talk to?</span>
+                        <span className="text-gray-400 text-sm md:text-base font-light text-left opacity-70 pl-0">e.g. Someone who speaks Spanish and loves movies.</span>
                       </div>
                     )}
-              <input
-                type="text"
+              <textarea
                 value={intent}
-                onChange={(e) => setIntent(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onChange={(e) => {
+                  setIntent(e.target.value)
+                  // 自動高さ調整
+                  e.target.style.height = 'auto'
+                  e.target.style.height = `${Math.min(e.target.scrollHeight, 192)}px`
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    const form = e.currentTarget.closest('form')
+                    if (form) {
+                      const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as React.FormEvent
+                      handleSubmit(formEvent)
+                    }
+                  }
+                }}
                 onFocus={() => {
                   // モバイルでのフォーカス時に確実にプレースホルダーを非表示
                 }}
                 placeholder=""
-                className="w-full bg-transparent border-none outline-none text-gray-400 text-sm md:text-base font-light pr-4 text-left opacity-70 min-h-[3rem]"
+                rows={1}
+                className="w-full bg-white border-none outline-none text-gray-800 text-sm md:text-base font-light pr-3 md:pr-4 pl-0 text-left resize-none overflow-hidden min-h-[4rem] md:min-h-[3rem] leading-relaxed pt-2 md:pt-0"
+                style={{
+                  minHeight: '4rem',
+                  maxHeight: '12rem',
+                }}
               />
                   </div>
               {/* Single circular button with arrow up */}
@@ -309,7 +333,8 @@ export default function Home() {
                     "flex items-center justify-center",
                     "hover:bg-gray-900 transition-all",
                     "flex-shrink-0 shadow-lg",
-                    "self-end mb-0 mr-0"
+                    "absolute bottom-3 md:bottom-5 right-3 md:right-5",
+                    "z-10"
                   )
                 )}
               >

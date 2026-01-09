@@ -5,8 +5,8 @@ import Image from 'next/image'
 
 const features = [
   {
-    title: 'Talk language partners, not strangers.',
-    description: 'Meet people who are serious about building a real language partnership. Learn together, or exchange languages with native speakers.',
+    title: 'Talk to international friends',
+    description: 'Talk people who are serious about real connections. Learn together. Make friends with native speakers.',
     image: '/What_is_Nelo_01.jpg',
   },
   {
@@ -15,15 +15,14 @@ const features = [
     image: '/What_is_Nelo_02.jpg',
   },
   {
-    title: 'We schedule it for you.',
-    description: 'No ghosting. No endless chatting.',
-    subDescription: 'We match you and book the conversation.',
+    title: 'No DMs. Scheduled in seconds.',
+    description: 'No endless chatting. No ghosting.',
+    subDescription: 'Matched and scheduled by AI. Just talk.',
     image: '/What_is_Nelo_03.jpg',
   },
   {
-    title: 'Your connections don\'t fade.',
-    description: 'Reconnect with people you enjoyed talking to.',
-    subDescription: 'Turn one good conversation into something ongoing.',
+    title: 'Designed for relationships that last.',
+    description: 'Reconnect with people you enjoyed talking to. Built to support regular conversations and easy reconnects, so relationships don\'t fade.',
     image: '/What_is_Nelo_04.jpg',
   },
 ]
