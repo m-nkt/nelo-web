@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
-const features = [
+const features: { title: string; description: string; image: string; subDescription?: string }[] = [
   {
     title: 'We filter for what you really want.',
     description: 'Friendship. Dating. Language exchange. It\'s up to you. Tell us what kind of connection you\'re looking for, and who you\'d actually enjoy talking to.',

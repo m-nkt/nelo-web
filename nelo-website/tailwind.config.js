@@ -8,10 +8,10 @@ module.exports = {
       theme: {
         extend: {
           fontFamily: {
-            serif: ['var(--font-playfair)'],
-            sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-            display: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
-            modern: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+            modern: ['DM Sans', 'system-ui', 'sans-serif'],
           },
         },
       },
