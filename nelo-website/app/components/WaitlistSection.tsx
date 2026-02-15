@@ -33,12 +33,12 @@ export default function WaitlistSection() {
             Join the Waitlist
           </motion.h2>
           <motion.p 
-            className="text-xl md:text-2xl font-light font-sans"
+            className="text-lg md:text-xl font-light font-sans"
             style={{
               color: useTransform(scrollY, [300, 600], ['rgba(255, 255, 255, 0.9)', 'rgba(75, 85, 99, 1)']),
             }}
           >
-            Start building international friendships that last.
+            Real connections, set up for you.
           </motion.p>
         </motion.div>
 

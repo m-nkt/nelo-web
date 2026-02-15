@@ -5,19 +5,18 @@ import Image from 'next/image'
 
 const features = [
   {
-    title: 'Talk to international friends',
-    description: 'Talk people who are serious about real connections. Learn together. Make friends with native speakers.',
+    title: 'We filter for what you really want.',
+    description: 'Friendship. Dating. Language exchange. It\'s up to you. Tell us what kind of connection you\'re looking for, and who you\'d actually enjoy talking to.',
     image: '/What_is_Nelo_01.jpg',
   },
   {
-    title: 'Match by personality and interests.',
-    description: 'Find language partners through shared interests like music, games, or anime, along with MBTI to help conversations feel natural.',
+    title: 'We introduce people who truly fit you.',
+    description: 'The more we learn about you, the better the match. We don\'t introduce people with bad reputations. You choose how many introductions you want each week.',
     image: '/What_is_Nelo_02.jpg',
   },
   {
-    title: 'No DMs. Scheduled in seconds.',
-    description: 'No endless chatting. No ghosting.',
-    subDescription: 'Matched and scheduled by AI. Just talk.',
+    title: 'No swiping. No DMs. Just show up.',
+    description: 'No endless chatting. No ghosting. We match and schedule for you. All you have to do is talk.',
     image: '/What_is_Nelo_03.jpg',
   },
   {
@@ -67,6 +66,7 @@ export default function FeaturesSection() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   quality={85}
+                  unoptimized
                 />
               </div>
               

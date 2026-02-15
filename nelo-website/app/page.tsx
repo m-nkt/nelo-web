@@ -25,7 +25,16 @@ const Footer = dynamic(() => import('./components/Footer'), {
 
 const TALLY_URL = 'https://tally.so/r/jabRR6'
 
+// 背景画像の黒オーバーレイの濃さ（0 = なし、1 = 真っ黒）
+const BACKGROUND_OVERLAY_OPACITY = 0.05
+
+// ヘッダー・タグのぼかし強さ（0 = なし、4 = 弱め、12 = 中、24 = 強め）
+const BACKDROP_BLUR_PX = 4
+
 const tags = [
+  'Friends',
+  'Dating',
+  'International friends',
   'English speakers',
   'Spanish speakers',
   'Japanese speakers',
@@ -33,11 +42,12 @@ const tags = [
   'woman',
   'Music lovers',
   'Game fans',
-  'Travelers',
-  'Foodies',
   'Entrepreneurs',
-  'ISFJ Matches',
-  'ENFP Matches',
+  'NYC',
+  'SF',
+  'London',
+  'Paris',
+  'Tokyo',
 ]
 
 // ヒーローセクション用の高速アニメーション（LCP改善のため）
@@ -111,7 +121,7 @@ export default function Home() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/background_mobile.jpg"
+            src="/background_hero.png"
             alt="Background"
             fill
             priority
@@ -120,6 +130,11 @@ export default function Home() {
             quality={85}
           />
         </div>
+        {/* 黒半透明オーバーレイ（BACKGROUND_OVERLAY_OPACITYで調整） */}
+        <div
+          className="absolute inset-0 z-[5]"
+          style={{ backgroundColor: `rgba(0, 0, 0, ${BACKGROUND_OVERLAY_OPACITY})` }}
+        />
         {/* Animated gradient overlay */}
           <motion.div
           className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10 z-10"
@@ -149,7 +164,7 @@ export default function Home() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/background.jpg"
+            src="/background_hero.png"
             alt="Background"
             fill
             priority
@@ -158,6 +173,11 @@ export default function Home() {
             quality={85}
           />
         </div>
+        {/* 黒半透明オーバーレイ（BACKGROUND_OVERLAY_OPACITYで調整） */}
+        <div
+          className="absolute inset-0 z-[5]"
+          style={{ backgroundColor: `rgba(0, 0, 0, ${BACKGROUND_OVERLAY_OPACITY})` }}
+        />
         {/* Animated gradient overlay */}
           <motion.div
           className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10 z-10"
@@ -189,7 +209,10 @@ export default function Home() {
       >
         <div className="w-[70%] mx-auto px-6 md:px-8">
           {/* Glassmorphism background for header - only covers content area */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 md:px-8 py-2.5 md:py-3">
+          <div
+            className="bg-white/10 border border-white/20 rounded-full px-6 md:px-8 py-2.5 md:py-3"
+            style={BACKDROP_BLUR_PX > 0 ? { backdropFilter: `blur(${BACKDROP_BLUR_PX}px)`, WebkitBackdropFilter: `blur(${BACKDROP_BLUR_PX}px)` } : undefined}
+          >
             <div className="flex items-center justify-between">
           {/* Logo */}
           <motion.div
@@ -237,16 +260,14 @@ export default function Home() {
           {/* Hero Title with Playfair Display */}
           <motion.h1
             variants={fadeInUp}
-            className="font-serif text-6xl sm:text-7xl md:text-[7rem] lg:text-[8rem] xl:text-[9rem] font-normal text-white mb-6 md:mb-12 leading-tight tracking-tight md:tracking-normal"
+            className="font-serif text-7xl sm:text-5xl md:text-[5rem] lg:text-[6rem] xl:text-[7rem] font-normal text-white mb-6 leading-[0.95] md:leading-tight tracking-tighter md:tracking-[-0.05em]"
             style={{ textShadow: '0 2px 20px rgba(0,0,0,0.1)' }}
           >
             <span className="md:hidden">
-              New friends.<br />
-              That last.
+              Nelo sets you up
             </span>
             <span className="hidden md:inline">
-              New friends.<br />
-              That last.
+              Nelo sets you up
             </span>
           </motion.h1>
 
@@ -255,15 +276,14 @@ export default function Home() {
             variants={fadeInUp}
             className="mb-6 md:mb-16"
           >
-            <p className="text-lg md:text-xl lg:text-2xl text-white font-light leading-tight max-w-2xl mx-auto font-sans">
+            <p className="text-[15px] sm:text-base md:text-lg lg:text-xl text-white font-light leading-tight max-w-2xl mx-auto font-sans tracking-tight">
               <span className="md:hidden">
-                Make friends around the world.<br />
-                And keep talking to the ones<br />
-                that matter.
+                Your personalized AI matchmaker<br />
+                for <span className="font-semibold">friends</span> and <span className="font-semibold">dates</span> that actually fit.
               </span>
               <span className="hidden md:inline">
-                Make friends around the world.<br />
-                And keep talking to the ones that matter.
+                Your personalized AI matchmaker<br />
+                for <span className="font-semibold">friends</span> and <span className="font-semibold">dates</span> that actually fit.
               </span>
             </p>
           </motion.div>
@@ -359,7 +379,7 @@ export default function Home() {
                 onClick={() => handleTagClick(tag)}
                 className={twMerge(
                   clsx(
-                    "bg-white/10 backdrop-blur-md border border-white/20",
+                    "bg-white/10 border border-white/20",
                     "rounded-full px-4 md:px-6 py-2 md:py-3",
                     "text-white text-xs md:text-sm font-light",
                     "hover:bg-white/20 hover:text-white",
@@ -367,6 +387,7 @@ export default function Home() {
                     "shadow-sm"
                   )
                 )}
+                style={BACKDROP_BLUR_PX > 0 ? { backdropFilter: `blur(${BACKDROP_BLUR_PX}px)`, WebkitBackdropFilter: `blur(${BACKDROP_BLUR_PX}px)` } : undefined}
               >
                 {tag}
               </motion.button>
